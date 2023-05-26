@@ -18,6 +18,7 @@ export const money: Writable<number> = writable(ds.money);
 export const researchLevel: Writable<number> = writable(ds.researchLevel);
 export const automation: Writable<number[]> = writable(ds.automation);
 export const lastUpdate: Writable<number> = writable(Date.now());
+export const notifications: Writable<[string, number, number][]> = writable([]);
 importSave(localStorage.IDLE_FACTORY_DATA)
 
 function generateSave(): SaveGame {
@@ -33,7 +34,9 @@ export function generateExport(): string {
 }
 
 export function saveGame(): void {
-    localStorage.IDLE_FACTORY_DATA = generateExport()
+    localStorage.IDLE_FACTORY_DATA = generateExport();
+
+    sendNotification("Game saved", 1000);
 }
 
 export function importSave(data: string): void {
@@ -70,3 +73,22 @@ setInterval(() => {
 setInterval(() => {
     saveGame();
 }, 60000);
+
+export function sendNotification(msg: string, timeout: number = 0): void {
+    const id: number = Math.random();
+    notifications.set([...get(notifications), [msg, timeout ?? null, id]]);
+
+    if (!timeout) return;
+    setTimeout(() => {
+        const n: [string, number, number][] = get(notifications);
+        n.splice(n.findIndex((v) => v[2] == id), 1);
+        notifications.set(n);
+    }, timeout)
+}
+
+addEventListener("keydown", (e: KeyboardEvent) => {
+    if (e.code != "KeyS" || !e.ctrlKey) return;
+    e.preventDefault();
+    if (e.repeat) return;
+    saveGame();
+})

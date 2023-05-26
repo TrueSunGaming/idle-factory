@@ -5,6 +5,7 @@
     import { appState } from "./lib/state";
     import Automation from "./pages/Automation.svelte";
     import Settings from "./pages/Settings.svelte";
+    import Notifications from "./lib/Notifications.svelte";
 
     const content: (typeof SvelteComponent | null)[] = [
         Machines,
@@ -24,3 +25,4 @@
         Invalid Page
     {/if}
 </State>
+<Notifications />
